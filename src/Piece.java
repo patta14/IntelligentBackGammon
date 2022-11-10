@@ -13,4 +13,9 @@ public class Piece {
     public boolean isColour() {
         return colour;
     }
+
+    public int move(int count){
+        position = position + count;
+                return position;
+    }
 }

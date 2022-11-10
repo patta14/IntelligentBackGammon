@@ -17,10 +17,10 @@ public class SimulationState extends SimState {
 		
 		//make sure you understand the different version of the scheduleOnce() und scheduleRepeating() methods (read documentation)
 		//agent order is random if agents with same ordering are called at the same time
-		Agent alice = new Agent("Alice");
+		Agent alice = new Agent("Alice", true);
 		schedule.scheduleRepeating(alice, 0, 1.0);
 		
-		Agent bob = new Agent("Bob");
+		Agent bob = new Agent("Bob", false);
 		schedule.scheduleRepeating(bob, 1, 1.0);
 	}
 	
