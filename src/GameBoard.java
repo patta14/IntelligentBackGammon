@@ -42,13 +42,13 @@ public class GameBoard {
         int stoneCount = 0;
         if(agent.isColour()){
             for(int i = 19; i<25; i++) {
-                if (positions.get(i).peek().isColour()) {
+                if (!positions.get(i).isEmpty() && positions.get(i).peek().isColour()) {
                     stoneCount = stoneCount + positions.get(i).capacity();
                 }
             }
         } else {
             for (int i = 1; i < 6; i++){
-                if(!positions.get(i).peek().isColour()){
+                if(!positions.get(i).isEmpty() && !positions.get(i).peek().isColour()){
                     stoneCount = stoneCount + positions.get(i).capacity();
                 }
             }
@@ -60,7 +60,7 @@ public class GameBoard {
             return false;
         }
     }
-
+    /**Gibt einem eine Liste mit allen legalen Würfen für den Würfel wieder*/
     public ArrayList<Move> giveMoves(int count, Agent agent){
         ArrayList<Move> moves = new ArrayList<>();
         for(int i = 1; i<24; i++) {

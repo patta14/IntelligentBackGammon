@@ -27,6 +27,7 @@ public class SimulationState extends SimState {
 		alice = new Agent("Alice", true);
 		gameBoard = new GameBoard(alice, bob);
 
+		//Zum aktuellen Zeitpunkt ist dieser Code zum Testen hier. Später wird er entfernt
 		Dice dice = new Dice();
 		int dice1 = dice.roll();
 		int dice2 = dice.roll();
@@ -34,6 +35,7 @@ public class SimulationState extends SimState {
 		for (Move move :gameBoard.giveMoves(dice1, alice)) {
 			System.out.println(move.getPreviousPosition() + " " + move.getNewPosition() + " " + move.isCanKick());
 		}
+		gameBoard.checkEndgame(alice);
 		
 		//make sure you understand the different version of the scheduleOnce() und scheduleRepeating() methods (read documentation)
 		//agent order is random if agents with same ordering are called at the same time
