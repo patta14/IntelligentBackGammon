@@ -61,14 +61,11 @@ public class GameBoard {
         }
     }
 
-    public ArrayList<Move> giveMoves(int count, int count2, Agent agent){
+    public ArrayList<Move> giveMoves(int count, Agent agent){
         ArrayList<Move> moves = new ArrayList<>();
         for(int i = 1; i<24; i++) {
             if(checkMove(count, i, agent).getNewPosition() != checkMove(count, i, agent).getPreviousPosition()){
                 moves.add(checkMove(count, i, agent));
-            }
-            if(checkMove(count2, i, agent).getNewPosition() != checkMove(count2, i, agent).getPreviousPosition()){
-                moves.add(checkMove(count2, i, agent));
             }
         }
         return moves;

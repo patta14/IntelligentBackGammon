@@ -31,7 +31,7 @@ public class SimulationState extends SimState {
 		int dice1 = dice.roll();
 		int dice2 = dice.roll();
 		System.out.println(dice1 + " und " + dice2);
-		for (Move move :gameBoard.giveMoves(dice1, dice2, alice)) {
+		for (Move move :gameBoard.giveMoves(dice1, alice)) {
 			System.out.println(move.getPreviousPosition() + " " + move.getNewPosition() + " " + move.isCanKick());
 		}
 		
