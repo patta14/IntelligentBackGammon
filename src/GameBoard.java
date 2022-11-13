@@ -19,6 +19,7 @@ public class GameBoard {
             positions.add(new Stack<Piece>());
         }
 
+        //Hinzufügen der Spielsteine auf den Startpositionen für beide Spieler
         positions.add(1, setup(2, true));
         positions.add(6, setup(6,false));
         positions.add(8,setup(3,false));
@@ -37,7 +38,7 @@ public class GameBoard {
         return stack;
     }
 
-    /**Überprüft ob alle Steine im letzten Quadranten sind und die Steine nun ins Ziel gewürfelt werden dürfen*/
+    /**Überprüft, ob alle Steine im letzten Quadranten eines Spielers sind und ob die Steine nun ins Ziel gewürfelt werden dürfen*/
     public boolean checkEndgame(Agent agent){
         int stoneCount = 0;
         if(agent.isColour()){
@@ -54,13 +55,17 @@ public class GameBoard {
             }
         }
 
-        if(stoneCount == whitePiecesInGame || stoneCount == blackPiecesInGame) {
-            return true;
-        } else {
-            return false;
-        }
+        return stoneCount == whitePiecesInGame || stoneCount == blackPiecesInGame;
     }
-    /**Gibt einem eine Liste mit allen legalen Würfen für den Würfel wieder*/
+
+    //Überprüft, ob ein Spieler alle Spielsteine im Ziel hat und das Spiel somit beendet ist
+    public boolean checkFinish(Agent agent){
+        if(agent.isColour() && positions.get(25).size()==15){
+            return  true;
+        } else return !agent.isColour() && positions.get(0).size() == 15;
+    }
+
+    /**Gibt eine Liste mit allen legalen Würfen für die gewürfelte Augenzahl aus*/
     public ArrayList<Move> giveMoves(int count, Agent agent){
         ArrayList<Move> moves = new ArrayList<>();
         for(int i = 1; i<24; i++) {

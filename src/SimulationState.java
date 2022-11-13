@@ -35,7 +35,10 @@ public class SimulationState extends SimState {
 		for (Move move :gameBoard.giveMoves(dice1, alice)) {
 			System.out.println(move.getPreviousPosition() + " " + move.getNewPosition() + " " + move.isCanKick());
 		}
-		gameBoard.checkEndgame(alice);
+		//Darf Alice mit dem Abtragen beginnen
+		System.out.println(gameBoard.checkEndgame(alice));
+		//Hat Alice gewonnen
+		System.out.println(gameBoard.checkFinish(alice));
 		
 		//make sure you understand the different version of the scheduleOnce() und scheduleRepeating() methods (read documentation)
 		//agent order is random if agents with same ordering are called at the same time
