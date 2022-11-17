@@ -60,10 +60,29 @@ public class GameBoard {
 
     //Überprüft, ob ein Spieler alle Spielsteine im Ziel hat und das Spiel somit beendet ist
     public boolean checkFinish(Agent agent){
+        if(agent.isColour()){
+            for(int i=0; i<26; i++){
+                if (!positions.get(i).isEmpty() && positions.get(i).peek().isColour()) {
+                    return false;
+                }
+            }
+        } else {
+            for(int i=0; i<26; i++){
+                if (!positions.get(i).isEmpty() && positions.get(i).peek().isColour()) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+
+    /*public boolean checkFinish(Agent agent){
         if(agent.isColour() && positions.get(25).size()==15){
             return  true;
         } else return !agent.isColour() && positions.get(0).size() == 15;
-    }
+    }*/
+
 
     /**Gibt eine Liste mit allen legalen Würfen für die gewürfelte Augenzahl aus*/
     public ArrayList<Move> giveMoves(int count, Agent agent){
