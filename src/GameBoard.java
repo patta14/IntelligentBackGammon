@@ -12,9 +12,9 @@ public class GameBoard {
     int blackPiecesInGame = 15;
     int whitePiecesInGame = 15;
 
-    public GameBoard(Agent white, Agent black){
-        this.white = white;
-        this.black = black;
+    public GameBoard(){
+        this.white = new Agent("Alice", true, this);
+        this.black = new Agent("Bob", false, this);
         for(int i = 0; i<27; i++){
             positions.add(new Stack<Piece>());
         }
@@ -35,6 +35,16 @@ public class GameBoard {
             stack.push(new Piece(colour));
         }
         return stack;
+    }
+
+    public ArrayList<Stack<Piece>> playMove(Move move, Agent agent){
+        if(move.isCanKick()
+                && (positions.get(move.getNewPosition()).capacity() == 1 && positions.get(move.getNewPosition()).peek().isColour() != agent.isColour())){
+            int temp = agent.isColour() ? 0 : 25;
+            positions.get(temp).push(positions.get(move.getNewPosition()).pop());
+        }
+        positions.get(move.getNewPosition()).push(positions.get(move.getPreviousPosition()).pop());
+        return positions;
     }
 
     /**Überprüft ob alle Steine im letzten Quadranten sind und die Steine nun ins Ziel gewürfelt werden dürfen*/
@@ -86,6 +96,16 @@ public class GameBoard {
             return new Move(position, position+count, true);
         }
         return new Move(position,position,false);
+    }
+
+    public boolean checkFinal(Agent agent){
+        boolean won = true;
+        for(Stack<Piece> stack: positions){
+            if(stack.peek().isColour() == agent.isColour()){
+                won = false;
+            }
+        }
+        return won;
     }
 
     public ArrayList<Stack<Piece>> getPositions() {
