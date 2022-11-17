@@ -1,4 +1,3 @@
-import sun.management.resources.agent;
 
 import java.util.ArrayList;
 import java.util.Stack;
@@ -74,29 +73,26 @@ public class GameBoard {
     public ArrayList<Move> giveMoves(int count, Agent agent){
         ArrayList<Move> moves = new ArrayList<>();
         for(int i = 1; i<24; i++) {
-            if(checkMove(count, i, agent).getNewPosition() != checkMove(count, i, agent).getPreviousPosition()){
+            if(positions.get(i).size() != 0 && checkMove(count, i, agent).isLegal()){
                 moves.add(checkMove(count, i, agent));
             }
         }
         return moves;
     }
     public Move checkMove(int count, int position, Agent agent){
-        if(positions.get(position).isEmpty()){
-            return new Move(position,position,false);
+        int newPosition = agent.isColour() ? position+count : position-count;
+        boolean inRange = (newPosition > 0 && newPosition < 25) ? true : false;
+
+        if(!inRange){
+            return new Move(position, newPosition, false, false);
+        } else if (inRange && positions.get(newPosition).isEmpty() || positions.get(newPosition).peek().isColour() == agent.isColour()) {
+            return new Move(position, newPosition, false, true);
+        } else if (inRange && positions.get(newPosition).size() == 1 && positions.get(newPosition).peek().isColour() != agent.isColour()) {
+            return new Move(position, newPosition, true, true);
         }
-        if (positions.get(position).peek().isColour() == agent.isColour() &&
-            positions.get(position + count).isEmpty()) {
-            return new Move(position, position+count, false);
-        } else if (positions.get(position).peek().isColour() == agent.isColour() && positions.get(position + count).peek().isColour() == agent.isColour()) {
-            return new Move(position, position+count, false);
-        }
-        if (positions.get(position).peek().isColour() == agent.isColour()
-                && (positions.get(position + count).peek().isColour() == false
-                && positions.get(position + count).capacity() == 1)){
-            return new Move(position, position+count, true);
-        }
-        return new Move(position,position,false);
+        return new Move(position, newPosition, false, false);
     }
+
 
     public boolean checkFinal(Agent agent){
         boolean won = true;

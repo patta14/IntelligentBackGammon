@@ -11,7 +11,7 @@ public class RandomMovesStrategy implements Strategy {
     }
     public Move run(ArrayList<Move> moves, GameBoard gameBoard, Dices dices){
         if(moves.size() == 0){
-            return new Move(0, 0, false);
+            return new Move(0, 0, false, false);
         }
         return moves.get(rng.nextInt(moves.size()));
     }
