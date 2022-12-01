@@ -5,11 +5,22 @@ public class Move {
 
     private boolean legal;
 
+    private boolean out;
+
     public Move(int previousPosition, int newPosition, boolean canKick, boolean legal){
         this.previousPosition = previousPosition;
         this.newPosition = newPosition;
         this.canKick = canKick;
         this.legal = legal;
+        this.out = false;
+    }
+
+    public Move(int previousPosition, int newPosition, boolean canKick, boolean legal, boolean out){
+        this.previousPosition = previousPosition;
+        this.newPosition = newPosition;
+        this.canKick = canKick;
+        this.legal = legal;
+        this.out = out;
     }
 
     public int getPreviousPosition() {
@@ -42,5 +53,13 @@ public class Move {
 
     public void setLegal(boolean legal) {
         this.legal = legal;
+    }
+
+    public boolean isOut() {
+        return out;
+    }
+
+    public void setOut(boolean out) {
+        this.out = out;
     }
 }

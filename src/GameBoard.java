@@ -4,9 +4,11 @@ import java.util.Stack;
 
 public class GameBoard {
 
-    ArrayList<Stack<Piece>> positions = new ArrayList<>();
-    Agent white;
-    Agent black;
+    public static int ROUNDS = 0;
+
+    private ArrayList<Stack<Piece>> positions = new ArrayList<>();
+    private Agent white;
+    private Agent black;
 
     int blackPiecesInGame = 15;
     int whitePiecesInGame = 15;
@@ -93,6 +95,13 @@ public class GameBoard {
         return new Move(position, newPosition, false, false);
     }
 
+    public ArrayList<Move> exitJail(Agent agent, Dices dices){
+        ArrayList<Move> moves = new ArrayList<>();
+        moves.add(checkMove(dices.getFace1(), agent.isColour() ? 0 : 25, agent));
+        moves.add(checkMove(dices.getFace2(), agent.isColour() ? 0 : 25, agent));
+        return moves;
+    }
+
 
     public boolean checkFinal(Agent agent){
         boolean won = true;
@@ -103,6 +112,46 @@ public class GameBoard {
         }
         return won;
     }
+
+    public ArrayList<Move> giveFinalMoves(Agent agent, Dices dices){
+        ArrayList<Move> moves = new ArrayList<>();
+        if(checkEndgame(agent)){
+            return moves;
+        }
+
+        if(agent.isColour()){
+            if(!positions.get(dices.getFace1()).isEmpty() && positions.get(dices.getFace1()).peek().isColour()){
+                moves.add(new Move(dices.getFace1(), 0, false, true, true));
+            }
+            if(!positions.get(dices.getFace2()).isEmpty() && positions.get(dices.getFace2()).peek().isColour()) {
+                moves.add(new Move(dices.getFace1(), 0, false, true, true));
+            }
+        } else {
+            if(!positions.get(dices.getFace1()).isEmpty() && positions.get(25 - dices.getFace1()).peek().isColour()){
+                moves.add(new Move(dices.getFace1(), 0, false, true, true));
+            }
+            if(!positions.get(dices.getFace2()).isEmpty() && positions.get(25 - dices.getFace2()).peek().isColour()) {
+                moves.add(new Move(dices.getFace1(), 0, false, true, true));
+            }
+        }
+        if(moves.isEmpty()){
+            for(Move move : giveMoves(dices.getFace1(), agent)){
+                if(move.isLegal())
+                    moves.add(move);
+            }
+            for(Move move : giveMoves(dices.getFace2(), agent)){
+                if(move.isLegal())
+                    moves.add(move);
+            }
+        }
+
+        if(moves.isEmpty()){
+
+        }
+        return moves;
+    }
+
+
 
     public ArrayList<Stack<Piece>> getPositions() {
         return positions;
@@ -143,6 +192,8 @@ public class GameBoard {
     public void setWhitePiecesInGame(int whitePiecesInGame) {
         this.whitePiecesInGame = whitePiecesInGame;
     }
+
+
 }
 
 

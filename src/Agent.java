@@ -2,6 +2,8 @@ import ec.util.MersenneTwisterFast;
 import sim.engine.SimState;
 import sim.engine.Steppable;
 
+import java.util.ArrayList;
+
 public class Agent implements Steppable {
 
 	private MersenneTwisterFast rng = new MersenneTwisterFast();
@@ -38,15 +40,10 @@ public class Agent implements Steppable {
 		dices.roll();
 		System.out.println(this.name + " hat eine " + dices.getFace1() + " und eine " + dices.getFace2()+ " gewürfelt.");
 		System.out.println();
-		if(dices.getFace1() == dices.getFace2()){
-			for(int i = 0; i < 4; i++){
-				internalPlayMove(strategy.run(gameBoard.giveMoves(dices.getFace1(), this), gameBoard, dices));
 
-			}
-		} else {
-			internalPlayMove(strategy.run(gameBoard.giveMoves(dices.getFace1(), this), gameBoard, dices));
-			internalPlayMove(strategy.run(gameBoard.giveMoves(dices.getFace1(), this), gameBoard, dices));
-		}
+		agentPlay(dices);
+
+		//Dieser Teil bis Zeile 72 bildet einfach nur das Brett ab!
 		for(int i = 13; i< 25; i++){
 			if(gameBoard.getPositions().get(i).isEmpty() || gameBoard.getPositions().get(i).size() == 0){
 				System.out.print(" Frei ;");
@@ -67,13 +64,43 @@ public class Agent implements Steppable {
 			}
 		}
 		System.out.println();
+		System.out.println("Aktuell im im Gefängnis: " + (!this.isColour() ? gameBoard.getPositions().get(25).size() : gameBoard.getPositions().get(0).size()));
+		System.out.println();
 		System.out.println(this.name + " beendet seinen Zug!");
+
+
+
 		dices.roll();
 	}
-	private void internalPlayMove(Move move){
-		if(move.getNewPosition() == 0 && move.getPreviousPosition() == 0){
 
-		} else {
+	private void agentPlay(Dices dices){
+		ArrayList<Integer> remainingDices = new ArrayList<>();
+		if(dices.getFace1() == dices.getFace2()) {
+			for (int i = 0; i < 4; i++) {
+				remainingDices.add(dices.getFace1());
+			}
+		}else {
+				remainingDices.add(dices.getFace1());
+				remainingDices.add(dices.getFace2());
+			}
+
+		while(!remainingDices.isEmpty() && (this.isColour() ? gameBoard.getPositions().get(0).size() == 1 : gameBoard.getPositions().get(25).size() == 1)){
+			Move move1 = strategy.run(gameBoard.exitJail(this, dices), gameBoard, dices);
+			for (Integer i: remainingDices) {
+				if(i == Math.abs(move1.getPreviousPosition() - move1.getNewPosition())){
+					remainingDices.remove(i);
+					break;
+				}
+			}
+			internalPlayMove(move1);
+			
+		}
+		for(Integer i: remainingDices){
+			internalPlayMove(strategy.run(gameBoard.giveMoves(i, this), gameBoard, dices));
+		}
+	}
+	private void internalPlayMove(Move move){
+		if(move.isLegal()){
 			gameBoard.playMove(move, this);
 		}
 	}

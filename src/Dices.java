@@ -20,6 +20,10 @@ public class Dices{
         return this;
     }
 
+    public int returnSum(){
+        return face1 + face2;
+    }
+
     public int getFace1() {
         return face1;
     }
