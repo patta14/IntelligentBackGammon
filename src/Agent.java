@@ -30,11 +30,13 @@ public class Agent implements Steppable {
 	//step() method is basically the start point for agent behavior
 	@Override
 	public void step(SimState simState) {
+		/*
 		try {
 			Thread.sleep(3000);
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		}
+		*/
 		System.out.println(this.name + " beginnt einen Zug!");
 		SimulationState simulationState = (SimulationState) simState;
 		dices.roll();
@@ -43,6 +45,12 @@ public class Agent implements Steppable {
 
 		agentPlay(dices);
 
+		//printInfo();
+
+		dices.roll();
+	}
+
+	private void printInfo(){
 		//Dieser Teil bis Zeile 72 bildet einfach nur das Brett ab!
 		for(int i = 13; i< 25; i++){
 			if(gameBoard.getPositions().get(i).isEmpty() || gameBoard.getPositions().get(i).size() == 0){
@@ -67,10 +75,6 @@ public class Agent implements Steppable {
 		System.out.println("Aktuell im im Gefängnis: " + (!this.isColour() ? gameBoard.getPositions().get(25).size() : gameBoard.getPositions().get(0).size()));
 		System.out.println();
 		System.out.println(this.name + " beendet seinen Zug!");
-
-
-
-		dices.roll();
 	}
 
 	private void agentPlay(Dices dices){
@@ -84,7 +88,7 @@ public class Agent implements Steppable {
 				remainingDices.add(dices.getFace2());
 			}
 
-		while(!remainingDices.isEmpty() && (this.isColour() ? gameBoard.getPositions().get(0).size() == 1 : gameBoard.getPositions().get(25).size() == 1)){
+		while(!remainingDices.isEmpty() && (this.isColour() ? gameBoard.getPositions().get(0).size() >= 1 : gameBoard.getPositions().get(25).size() >= 1)){
 			Move move1 = strategy.run(gameBoard.exitJail(this, dices), gameBoard, dices);
 			for (Integer i: remainingDices) {
 				if(i == Math.abs(move1.getPreviousPosition() - move1.getNewPosition())){
@@ -126,5 +130,9 @@ public class Agent implements Steppable {
 
 	public void setColour(boolean colour) {
 		this.colour = colour;
+	}
+
+	public Strategy getStrategy() {
+		return strategy;
 	}
 }

@@ -1,4 +1,7 @@
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Stack;
 
@@ -39,13 +42,44 @@ public class GameBoard {
     }
 
     public ArrayList<Stack<Piece>> playMove(Move move, Agent agent){
+        ROUNDS++;
         if(move.isCanKick()
                 && (positions.get(move.getNewPosition()).capacity() == 1 && positions.get(move.getNewPosition()).peek().isColour() != agent.isColour())){
             int temp = agent.isColour() ? 0 : 25;
             positions.get(temp).push(positions.get(move.getNewPosition()).pop());
         }
+        if(checkEndgame(agent) && move.isOut()){
+            positions.get(move.getPreviousPosition()).pop();
+        }
         positions.get(move.getNewPosition()).push(positions.get(move.getPreviousPosition()).pop());
+        if(checkFinal(agent)){
+            finishGame(agent, agent.isColour() ? black : white);
+        }
         return positions;
+    }
+
+    public void finishGame(Agent winner, Agent loser){
+        System.out.println(winner.getName() + " hat gewonnen!");
+        try {
+            File myObj = new File("result.txt");
+            if (myObj.createNewFile()) {
+                System.out.println("File created: " + myObj.getName());
+            } else {
+                System.out.println("File already exists.");
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
+        try {
+            FileWriter myWriter = new FileWriter("result.txt");
+            myWriter.write(winner.getName() + " " + winner.getStrategy().getName() + " " + loser.getName() + " " + loser.getStrategy().getName() + " " + ROUNDS);
+            myWriter.close();
+            System.out.println("Successfully wrote to the file.");
+        } catch (IOException e) {
+            System.out.println("An error occurred.");
+            e.printStackTrace();
+        }
     }
 
     /**Überprüft ob alle Steine im letzten Quadranten sind und die Steine nun ins Ziel gewürfelt werden dürfen*/
@@ -106,7 +140,7 @@ public class GameBoard {
     public boolean checkFinal(Agent agent){
         boolean won = true;
         for(Stack<Piece> stack: positions){
-            if(stack.peek().isColour() == agent.isColour()){
+            if(!stack.isEmpty() && stack.peek().isColour() == agent.isColour()){
                 won = false;
             }
         }
@@ -146,7 +180,22 @@ public class GameBoard {
         }
 
         if(moves.isEmpty()){
-
+            for(int i = agent.isColour() ? 6 : 19; agent.isColour() ? i > 0 : i < 25; i = agent.isColour() ? i - 1 : i + 1){
+                if(!positions.get(i).isEmpty() && positions.get(i).peek().isColour() == agent.isColour()){
+                    if(agent.isColour() ? i - dices.getFace1() <= 0 : i + dices.getFace1() >= 25){
+                        moves.add(new Move(i, i, false, true, true ));
+                        break;
+                    }
+                }
+            }
+            for(int i = agent.isColour() ? 6 : 19; agent.isColour() ? i > 0 : i < 25; i = agent.isColour() ? i - 1 : i + 1){
+                if(!positions.get(i).isEmpty() && positions.get(i).peek().isColour() == agent.isColour()){
+                    if(agent.isColour() ? i - dices.getFace2() <= 0 : i + dices.getFace2() >= 25){
+                        moves.add(new Move(i, i, false, true, true ));
+                        break;
+                    }
+                }
+            }
         }
         return moves;
     }
