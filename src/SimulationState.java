@@ -23,7 +23,7 @@ public class SimulationState extends SimState {
 
 		super.start();
 
-		gameBoard = new GameBoard();
+		gameBoard = new GameBoard(this);
 
 		
 		//make sure you understand the different version of the scheduleOnce() und scheduleRepeating() methods (read documentation)

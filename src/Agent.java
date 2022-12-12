@@ -20,10 +20,14 @@ public class Agent implements Steppable {
 		this.colour = colour;
 		this.gameBoard = gameBoard;
 
-		int i = 1; //rng.nextInt(1);
+		int i = rng.nextInt(2) + 1;
 		switch (i){
 			case 1:
 				strategy = new RandomMovesStrategy();
+				break;
+			case 2:
+				strategy = new BlockageStrategy();
+				break;
 		}
 	}
 
@@ -78,6 +82,11 @@ public class Agent implements Steppable {
 	}
 
 	private void agentPlay(Dices dices){
+		if(gameBoard.checkFinal(this)){
+			internalPlayMove(gameBoard.giveFinalMoves(this, dices).remove(0));
+			internalPlayMove(gameBoard.giveFinalMoves(this, dices).remove(0));
+		 	return;
+		}
 		ArrayList<Integer> remainingDices = new ArrayList<>();
 		if(dices.getFace1() == dices.getFace2()) {
 			for (int i = 0; i < 4; i++) {
@@ -100,8 +109,12 @@ public class Agent implements Steppable {
 			
 		}
 		for(Integer i: remainingDices){
-			internalPlayMove(strategy.run(gameBoard.giveMoves(i, this), gameBoard, dices));
+			ArrayList<Move> moves = gameBoard.giveMoves(i, this);
+			if(!moves.isEmpty()) {
+				internalPlayMove(strategy.run(moves, gameBoard, dices));
+			}
 		}
+		GameBoard.ROUNDS++;
 	}
 	private void internalPlayMove(Move move){
 		if(move.isLegal()){

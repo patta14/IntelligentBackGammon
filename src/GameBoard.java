@@ -16,7 +16,10 @@ public class GameBoard {
     int blackPiecesInGame = 15;
     int whitePiecesInGame = 15;
 
-    public GameBoard(){
+    private SimulationState simulationState;
+
+    public GameBoard(SimulationState simulationState){
+        this.simulationState = simulationState;
         this.white = new Agent("Alice", true, this);
         this.black = new Agent("Bob", false, this);
         for(int i = 0; i<27; i++){
@@ -42,7 +45,6 @@ public class GameBoard {
     }
 
     public ArrayList<Stack<Piece>> playMove(Move move, Agent agent){
-        ROUNDS++;
         if(move.isCanKick()
                 && (positions.get(move.getNewPosition()).capacity() == 1 && positions.get(move.getNewPosition()).peek().isColour() != agent.isColour())){
             int temp = agent.isColour() ? 0 : 25;
@@ -73,13 +75,14 @@ public class GameBoard {
         }
         try {
             FileWriter myWriter = new FileWriter("result.txt");
-            myWriter.write(winner.getName() + " " + winner.getStrategy().getName() + " " + loser.getName() + " " + loser.getStrategy().getName() + " " + ROUNDS);
+            myWriter.append(winner.getName() + " " + winner.getStrategy().getName() + " " + loser.getName() + " " + loser.getStrategy().getName() + " " + ROUNDS);
             myWriter.close();
             System.out.println("Successfully wrote to the file.");
         } catch (IOException e) {
             System.out.println("An error occurred.");
             e.printStackTrace();
         }
+        simulationState.finish();
     }
 
     /**Überprüft ob alle Steine im letzten Quadranten sind und die Steine nun ins Ziel gewürfelt werden dürfen*/
@@ -149,7 +152,7 @@ public class GameBoard {
 
     public ArrayList<Move> giveFinalMoves(Agent agent, Dices dices){
         ArrayList<Move> moves = new ArrayList<>();
-        if(checkEndgame(agent)){
+        if(!checkEndgame(agent)){
             return moves;
         }
 
