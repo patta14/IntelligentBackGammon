@@ -1,18 +1,18 @@
 import org.junit.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
 
 class BlockageStrategyTest {
 
-    @Test
-    void run() {
+
+    @org.junit.jupiter.api.Test
+    void testRun() {
     }
 
-    @Test
-    void checkSurrounding() {
+    @org.junit.jupiter.api.Test
+    void testCheckSurrounding() {
     }
 
-    @Test
-    void getName() {
+    @org.junit.jupiter.api.Test
+    void testGetName() {
     }
 }

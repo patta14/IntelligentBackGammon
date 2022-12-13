@@ -4,23 +4,25 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PieceTest {
 
-    @Test
-    void getPosition() {
-    }
+    Piece piece1 = new Piece(true);
+    Piece piece2 = new Piece(false);
 
     @Test
     void isColour() {
+        assertTrue(piece1.isColour());
+        assertFalse(piece2.isColour());
     }
 
-    @Test
-    void move() {
-    }
 
     @Test
     void setColour() {
-    }
-
-    @Test
-    void setPosition() {
+        piece1.setColour(false);
+        piece2.setColour(true);
+        assertTrue(piece2.isColour());
+        assertFalse(piece1.isColour());
+        piece2.setColour(false);
+        piece1.setColour(true);
+        assertTrue(piece1.isColour());
+        assertFalse(piece2.isColour());
     }
 }
