@@ -45,7 +45,7 @@ public class Agent implements Steppable {
 
 		agentPlay(dices);
 
-		//printInfo();
+		printInfo();
 
 		dices.roll();
 	}
