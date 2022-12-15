@@ -100,7 +100,7 @@ public class Agent implements Steppable {
 			}
 
 		while(!remainingDices.isEmpty() && (this.isColour() ? gameBoard.getPositions().get(0).size() >= 1 : gameBoard.getPositions().get(25).size() >= 1)){
-			Move move1 = strategy.run(gameBoard.exitJail(this, dices), gameBoard, dices);
+			Move move1 = strategy.run(gameBoard.exitJail(this, dices), gameBoard, dices, this);
 			for (Integer i: remainingDices) {
 				if(i == Math.abs(move1.getPreviousPosition() - move1.getNewPosition())){
 					remainingDices.remove(i);
@@ -113,7 +113,7 @@ public class Agent implements Steppable {
 		for(Integer i: remainingDices){
 			ArrayList<Move> moves = gameBoard.giveMoves(i, this);
 			if(!moves.isEmpty()) {
-				internalPlayMove(strategy.run(moves, gameBoard, dices));
+				internalPlayMove(strategy.run(moves, gameBoard, dices, this));
 			}
 		}
 		GameBoard.ROUNDS++;

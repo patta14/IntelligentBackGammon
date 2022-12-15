@@ -10,7 +10,7 @@ public class BlockageStrategy implements Strategy{
     public BlockageStrategy(){
     }
 
-    public Move run(ArrayList<Move> moves, GameBoard gameBoard, Dices dices) {
+    public Move run(ArrayList<Move> moves, GameBoard gameBoard, Dices dices, Agent agent) {
         if(moves.isEmpty()){
             return(new Move(0, 0, false, false, false));
         }

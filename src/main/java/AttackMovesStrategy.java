@@ -8,7 +8,7 @@ public class AttackMovesStrategy implements Strategy {
     private String name = "Attack";
     public AttackMovesStrategy(){
     }
-    public Move run(ArrayList<Move> moves, GameBoard gameBoard, Dices dices){
+    public Move run(ArrayList<Move> moves, GameBoard gameBoard, Dices dices, Agent agent){
         if(moves.size() == 0){
             return new Move(0, 0, false, false);
         }

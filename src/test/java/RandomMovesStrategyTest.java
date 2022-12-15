@@ -14,10 +14,10 @@ class RandomMovesStrategyTest {
 
     @Test
     void run() {
-        assertTrue(random.run(moves1, gameBoard, dices).getNewPosition() == 0 && random.run(moves1, gameBoard, dices).getPreviousPosition()== 0);
+        assertTrue(random.run(moves1, gameBoard, dices, gameBoard.getWhite()).getNewPosition() == 0 && random.run(moves1, gameBoard, dices, gameBoard.getWhite()).getPreviousPosition()== 0);
         Move move = new Move(1 , 5, false, true, false);
         moves2.add(move);
-        assertEquals(move, random.run(moves2, gameBoard, dices));
+        assertEquals(move, random.run(moves2, gameBoard, dices, gameBoard.getWhite()));
     }
 
     @Test
