@@ -25,14 +25,14 @@ public class GameBoard {
         for(int i = 0; i<27; i++){
             positions.add(new Stack<Piece>());
         }
-
+        //setup der Steine auf dem Spielfeld
         positions.add(1, setup(2, true));
-        positions.add(6, setup(6,false));
+        positions.add(6, setup(5,false));
         positions.add(8,setup(3,false));
-        positions.add(12,setup(6, true));
-        positions.add(13,setup(6, false));
+        positions.add(12,setup(5, true));
+        positions.add(13,setup(5, false));
         positions.add(17,setup(3, true));
-        positions.add(19,setup(6, true));
+        positions.add(19,setup(5, true));
         positions.add(24,setup(2, false));
         }
 
@@ -111,6 +111,7 @@ public class GameBoard {
     /**Gibt einem eine Liste mit allen legalen Würfen für den Würfel wieder*/
     public ArrayList<Move> giveMoves(int count, Agent agent){
         ArrayList<Move> moves = new ArrayList<>();
+        //muss das hier nicht <25?
         for(int i = 1; i<24; i++) {
             if(positions.get(i).size() != 0 && checkMove(count, i, agent).isLegal()){
                 moves.add(checkMove(count, i, agent));
@@ -128,6 +129,8 @@ public class GameBoard {
             return new Move(position, newPosition, false, true);
         } else if (inRange && positions.get(newPosition).size() == 1 && positions.get(newPosition).peek().isColour() != agent.isColour()) {
             return new Move(position, newPosition, true, true);
+        } else if (inRange && positions.get(newPosition).peek().isColour() == agent.isColour()){
+            return new Move(position, newPosition, false, true);
         }
         return new Move(position, newPosition, false, false);
     }
