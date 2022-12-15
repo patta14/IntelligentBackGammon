@@ -19,7 +19,7 @@ public class BlockageStrategy implements Strategy{
             if(move.isCanKick()){
                 return move;
             }
-        movePriorities.put(move, checkSurrounding(move, gameBoard));
+            movePriorities.put(move, checkSurrounding(move, gameBoard));
         }
         AtomicReference<Move> bestMove = new AtomicReference<>(moves.get(0));
         int max = Collections.max(movePriorities.values());
