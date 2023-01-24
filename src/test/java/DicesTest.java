@@ -16,6 +16,9 @@ class DicesTest {
 
     @Test
     void returnSum() {
+        dices.setFace1(1);
+        dices.setFace2(3);
+        assertEquals(4, dices.returnSum());
         assertEquals(dices.returnSum(), dices.getFace1() + dices.getFace2());
     }
 

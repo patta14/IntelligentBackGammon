@@ -7,7 +7,6 @@ import java.util.ArrayList;
 public class Agent implements Steppable {
 
 	private MersenneTwisterFast rng = new MersenneTwisterFast();
-	private Dices dices = new Dices();
 	private String name;
 
 	private Strategy strategy;
@@ -20,7 +19,7 @@ public class Agent implements Steppable {
 		this.colour = colour;
 		this.gameBoard = gameBoard;
 
-		int i = rng.nextInt(3) + 1;
+		int i = rng.nextInt(4) + 1;
 		switch (i){
 			case 1:
 				strategy = new RandomMovesStrategy();
@@ -30,6 +29,10 @@ public class Agent implements Steppable {
 				break;
 			case 3:
 				strategy = new AttackMovesStrategy();
+				break;
+			case 4:
+				strategy = new HoldingGameStrategy();
+				break;
 		}
 	}
 
@@ -44,19 +47,19 @@ public class Agent implements Steppable {
 		}
 		*/
 		System.out.println(this.name + " beginnt einen Zug!");
-		SimulationState simulationState = (SimulationState) simState;
-		dices.roll();
-		System.out.println(this.name + " hat eine " + dices.getFace1() + " und eine " + dices.getFace2()+ " gewürfelt.");
+		//SimulationState simulationState = (SimulationState) simState;
+		gameBoard.getDices().roll();
+		System.out.println(this.name + " hat eine " + gameBoard.getDices().getFace1() + " und eine " + gameBoard.getDices().getFace2()+ " gewürfelt.");
 		System.out.println();
 
-		agentPlay(dices);
+		agentPlay(gameBoard.getDices());
 
 		//printInfo();
 
-		dices.roll();
+		gameBoard.getDices().roll();
 	}
 
-	private void printInfo(){
+	public void printInfo(){
 		//Dieser Teil bis Zeile 72 bildet einfach nur das Brett ab!
 		for(int i = 13; i< 25; i++){
 			if(gameBoard.getPositions().get(i).isEmpty() || gameBoard.getPositions().get(i).size() == 0){
@@ -78,16 +81,20 @@ public class Agent implements Steppable {
 			}
 		}
 		System.out.println();
-		System.out.println("Aktuell im im Gefängnis: " + (!this.isColour() ? gameBoard.getPositions().get(25).size() : gameBoard.getPositions().get(0).size()));
+		System.out.println("Aktuell im im Gefängnis: " + (this.isColour() ? gameBoard.getPositions().get(25).size() : gameBoard.getPositions().get(0).size()));
 		System.out.println();
 		System.out.println(this.name + " beendet seinen Zug!");
 	}
 
-	private void agentPlay(Dices dices){
-		if(gameBoard.checkFinal(this)){
-			internalPlayMove(gameBoard.giveFinalMoves(this, dices).remove(0));
-			internalPlayMove(gameBoard.giveFinalMoves(this, dices).remove(0));
-		 	return;
+	public int agentPlay(Dices dices){
+		if(gameBoard.checkEndgame(this)){
+			if(!gameBoard.giveFinalMoves(this, dices).isEmpty()) {
+				internalPlayMove(gameBoard.giveFinalMoves(this, dices).remove(0));
+			}
+			if(!gameBoard.giveFinalMoves(this, dices).isEmpty()) {
+				internalPlayMove(gameBoard.giveFinalMoves(this, dices).remove(0));
+			}
+		 	return 1;
 		}
 		ArrayList<Integer> remainingDices = new ArrayList<>();
 		if(dices.getFace1() == dices.getFace2()) {
@@ -99,7 +106,7 @@ public class Agent implements Steppable {
 				remainingDices.add(dices.getFace2());
 			}
 
-		while(!remainingDices.isEmpty() && (this.isColour() ? gameBoard.getPositions().get(0).size() >= 1 : gameBoard.getPositions().get(25).size() >= 1)){
+		while(!remainingDices.isEmpty() && (this.isColour() ? gameBoard.getPositions().get(25).size() >= 1 : gameBoard.getPositions().get(0).size() >= 1)){
 			Move move1 = strategy.run(gameBoard.exitJail(this, dices), gameBoard, dices, this);
 			for (Integer i: remainingDices) {
 				if(i == Math.abs(move1.getPreviousPosition() - move1.getNewPosition())){
@@ -110,6 +117,7 @@ public class Agent implements Steppable {
 			internalPlayMove(move1);
 			
 		}
+		if(!remainingDices.isEmpty() && (this.isColour() ? gameBoard.getPositions().get(25).size() == 0 : gameBoard.getPositions().get(0).size() == 0))
 		for(Integer i: remainingDices){
 			ArrayList<Move> moves = gameBoard.giveMoves(i, this);
 			if(!moves.isEmpty()) {
@@ -117,19 +125,19 @@ public class Agent implements Steppable {
 			}
 		}
 		GameBoard.ROUNDS++;
+		return 0;
 	}
-	private void internalPlayMove(Move move){
+	public boolean internalPlayMove(Move move){
 		if(move.isLegal()){
 			gameBoard.playMove(move, this);
+			return true;
 		}
+		return false;
 	}
 	public Dices getDices() {
-		return dices;
+		return gameBoard.getDices();
 	}
 
-	public void setDices(Dices dices) {
-		this.dices = dices;
-	}
 
 	public String getName() {
 		return name;

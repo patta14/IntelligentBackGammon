@@ -33,4 +33,11 @@ public class Dices{
         return face2;
     }
 
+    public void setFace1(int face1) {
+        this.face1 = face1;
+    }
+
+    public void setFace2(int face2) {
+        this.face2 = face2;
+    }
 }

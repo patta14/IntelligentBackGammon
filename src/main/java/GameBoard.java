@@ -8,6 +8,15 @@ import java.util.Stack;
 public class GameBoard {
 
     public static int ROUNDS = 0;
+    private Dices dices = new Dices();
+
+    public Dices getDices() {
+        return dices;
+    }
+
+    public void setDices(Dices dices) {
+        this.dices = dices;
+    }
 
     private ArrayList<Stack<Piece>> positions = new ArrayList<>();
     private Agent white;
@@ -46,12 +55,13 @@ public class GameBoard {
 
     public ArrayList<Stack<Piece>> playMove(Move move, Agent agent){
         if(move.isCanKick()
-                && (positions.get(move.getNewPosition()).capacity() == 1 && positions.get(move.getNewPosition()).peek().isColour() != agent.isColour())){
-            int temp = agent.isColour() ? 0 : 25;
+                && (positions.get(move.getNewPosition()).size() == 1 && positions.get(move.getNewPosition()).peek().isColour() != agent.isColour())){
+            int temp = !agent.isColour() ? 25 : 0;
             positions.get(temp).push(positions.get(move.getNewPosition()).pop());
         }
         if(checkEndgame(agent) && move.isOut()){
             positions.get(move.getPreviousPosition()).pop();
+            return positions;
         }
         positions.get(move.getNewPosition()).push(positions.get(move.getPreviousPosition()).pop());
         if(checkFinal(agent)){
@@ -88,21 +98,21 @@ public class GameBoard {
     /**Überprüft ob alle Steine im letzten Quadranten sind und die Steine nun ins Ziel gewürfelt werden dürfen*/
     public boolean checkEndgame(Agent agent){
         int stoneCount = 0;
-        if(agent.isColour()){
+        if(!agent.isColour()){
             for(int i = 19; i<25; i++) {
-                if (!positions.get(i).isEmpty() && positions.get(i).peek().isColour()) {
-                    stoneCount = stoneCount + positions.get(i).capacity();
+                if (!positions.get(i).isEmpty() && !positions.get(i).peek().isColour()) {
+                    stoneCount = stoneCount + positions.get(i).size();
                 }
             }
         } else {
             for (int i = 1; i < 6; i++){
-                if(!positions.get(i).isEmpty() && !positions.get(i).peek().isColour()){
-                    stoneCount = stoneCount + positions.get(i).capacity();
+                if(!positions.get(i).isEmpty() && positions.get(i).peek().isColour()){
+                    stoneCount = stoneCount + positions.get(i).size();
                 }
             }
         }
 
-        if(stoneCount == whitePiecesInGame || stoneCount == blackPiecesInGame) {
+        if((agent.isColour() && stoneCount == this.getWhitePiecesInGame()) || (!agent.isColour() && stoneCount == this.getBlackPiecesInGame())) {
             return true;
         } else {
             return false;
@@ -112,7 +122,7 @@ public class GameBoard {
     public ArrayList<Move> giveMoves(int count, Agent agent){
         ArrayList<Move> moves = new ArrayList<>();
         //muss das hier nicht <25?
-        for(int i = 1; i<24; i++) {
+        for(int i = 1; i<25; i++) {
             if(positions.get(i).size() != 0 && checkMove(count, i, agent).isLegal()){
                 moves.add(checkMove(count, i, agent));
             }
@@ -120,7 +130,7 @@ public class GameBoard {
         return moves;
     }
     public Move checkMove(int count, int position, Agent agent){
-        int newPosition = agent.isColour() ? position+count : position-count;
+        int newPosition = agent.isColour() ? position-count : position+count;
         boolean inRange = (newPosition > 0 && newPosition < 25) ? true : false;
 
         if(!inRange){
@@ -137,8 +147,8 @@ public class GameBoard {
 
     public ArrayList<Move> exitJail(Agent agent, Dices dices){
         ArrayList<Move> moves = new ArrayList<>();
-        moves.add(checkMove(dices.getFace1(), agent.isColour() ? 0 : 25, agent));
-        moves.add(checkMove(dices.getFace2(), agent.isColour() ? 0 : 25, agent));
+        moves.add(checkMove(dices.getFace1(), agent.isColour() ? 25 : 0, agent));
+        moves.add(checkMove(dices.getFace2(), agent.isColour() ? 25 : 0, agent));
         return moves;
     }
 
@@ -159,7 +169,7 @@ public class GameBoard {
             return moves;
         }
 
-        if(agent.isColour()){
+        if(!agent.isColour()){
             if(!positions.get(dices.getFace1()).isEmpty() && positions.get(dices.getFace1()).peek().isColour()){
                 moves.add(new Move(dices.getFace1(), 0, false, true, true));
             }
@@ -167,10 +177,10 @@ public class GameBoard {
                 moves.add(new Move(dices.getFace1(), 0, false, true, true));
             }
         } else {
-            if(!positions.get(dices.getFace1()).isEmpty() && positions.get(25 - dices.getFace1()).peek().isColour()){
+            if(!positions.get(25 - dices.getFace1()).isEmpty() && positions.get(25 - dices.getFace1()).peek().isColour()){
                 moves.add(new Move(dices.getFace1(), 0, false, true, true));
             }
-            if(!positions.get(dices.getFace2()).isEmpty() && positions.get(25 - dices.getFace2()).peek().isColour()) {
+            if(!positions.get(25 - dices.getFace2()).isEmpty() && positions.get(25 - dices.getFace2()).peek().isColour()) {
                 moves.add(new Move(dices.getFace1(), 0, false, true, true));
             }
         }
@@ -186,17 +196,17 @@ public class GameBoard {
         }
 
         if(moves.isEmpty()){
-            for(int i = agent.isColour() ? 6 : 19; agent.isColour() ? i > 0 : i < 25; i = agent.isColour() ? i - 1 : i + 1){
+            for(int i = !agent.isColour() ? 6 : 19; !agent.isColour() ? i > 0 : i < 25; i = !agent.isColour() ? i - 1 : i + 1){
                 if(!positions.get(i).isEmpty() && positions.get(i).peek().isColour() == agent.isColour()){
-                    if(agent.isColour() ? i - dices.getFace1() <= 0 : i + dices.getFace1() >= 25){
+                    if(!agent.isColour() ? i - dices.getFace1() <= 0 : i + dices.getFace1() >= 25){
                         moves.add(new Move(i, i, false, true, true ));
                         break;
                     }
                 }
             }
-            for(int i = agent.isColour() ? 6 : 19; agent.isColour() ? i > 0 : i < 25; i = agent.isColour() ? i - 1 : i + 1){
-                if(!positions.get(i).isEmpty() && positions.get(i).peek().isColour() == agent.isColour()){
-                    if(agent.isColour() ? i - dices.getFace2() <= 0 : i + dices.getFace2() >= 25){
+            for(int i = !agent.isColour() ? 6 : 19; !agent.isColour() ? i > 0 : i < 25; i = !agent.isColour() ? i - 1 : i + 1){
+                if(!positions.get(i).isEmpty() && positions.get(i).peek().isColour() == !agent.isColour()){
+                    if(!agent.isColour() ? i - dices.getFace2() <= 0 : i + dices.getFace2() >= 25){
                         moves.add(new Move(i, i, false, true, true ));
                         break;
                     }
@@ -212,9 +222,6 @@ public class GameBoard {
         return positions;
     }
 
-    public void setPositions(ArrayList<Stack<Piece>> positions) {
-        this.positions = positions;
-    }
 
     public Agent getWhite() {
         return white;
@@ -233,21 +240,26 @@ public class GameBoard {
     }
 
     public int getBlackPiecesInGame() {
+        int temp = 0;
+        for (Stack<Piece> stack:positions) {
+            if(!stack.isEmpty() && !stack.peek().isColour()){
+                temp += stack.size();
+            }
+        }
+        blackPiecesInGame = temp;
         return blackPiecesInGame;
     }
 
-    public void setBlackPiecesInGame(int blackPiecesInGame) {
-        this.blackPiecesInGame = blackPiecesInGame;
-    }
-
     public int getWhitePiecesInGame() {
+        int temp = 0;
+        for (Stack<Piece> stack:positions) {
+            if(!stack.isEmpty() && stack.peek().isColour()){
+                temp += stack.size();
+            }
+        }
+        whitePiecesInGame = temp;
         return whitePiecesInGame;
     }
-
-    public void setWhitePiecesInGame(int whitePiecesInGame) {
-        this.whitePiecesInGame = whitePiecesInGame;
-    }
-
 
 }
 
