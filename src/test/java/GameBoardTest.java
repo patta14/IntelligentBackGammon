@@ -1,6 +1,7 @@
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Stack;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -16,6 +17,44 @@ class GameBoardTest {
         assertTrue(!stack.peek().isColour() && stack.size() == 69);
     }
 
+    GameBoard createEndgame(Agent agent, GameBoard gameBoard){
+        if(agent.isColour()){
+            gameBoard.getPositions().get(2).push(gameBoard.getPositions().get(19).pop());
+            gameBoard.getPositions().get(2).push(gameBoard.getPositions().get(19).pop());
+            gameBoard.getPositions().get(2).push(gameBoard.getPositions().get(19).pop());
+            gameBoard.getPositions().get(2).push(gameBoard.getPositions().get(19).pop());
+            gameBoard.getPositions().get(2).push(gameBoard.getPositions().get(19).pop());
+
+            gameBoard.getPositions().get(3).push(gameBoard.getPositions().get(17).pop());
+            gameBoard.getPositions().get(3).push(gameBoard.getPositions().get(17).pop());
+            gameBoard.getPositions().get(3).push(gameBoard.getPositions().get(17).pop());
+
+            gameBoard.getPositions().get(4).push(gameBoard.getPositions().get(12).pop());
+            gameBoard.getPositions().get(4).push(gameBoard.getPositions().get(12).pop());
+            gameBoard.getPositions().get(4).push(gameBoard.getPositions().get(12).pop());
+            gameBoard.getPositions().get(4).push(gameBoard.getPositions().get(12).pop());
+            gameBoard.getPositions().get(4).push(gameBoard.getPositions().get(12).pop());
+        } else {
+            gameBoard.getPositions().get(23).push(gameBoard.getPositions().get(6).pop());
+            gameBoard.getPositions().get(23).push(gameBoard.getPositions().get(6).pop());
+            gameBoard.getPositions().get(23).push(gameBoard.getPositions().get(6).pop());
+            gameBoard.getPositions().get(23).push(gameBoard.getPositions().get(6).pop());
+            gameBoard.getPositions().get(23).push(gameBoard.getPositions().get(6).pop());
+
+            gameBoard.getPositions().get(22).push(gameBoard.getPositions().get(8).pop());
+            gameBoard.getPositions().get(22).push(gameBoard.getPositions().get(8).pop());
+            gameBoard.getPositions().get(22).push(gameBoard.getPositions().get(8).pop());
+
+            gameBoard.getPositions().get(21).push(gameBoard.getPositions().get(13).pop());
+            gameBoard.getPositions().get(21).push(gameBoard.getPositions().get(13).pop());
+            gameBoard.getPositions().get(21).push(gameBoard.getPositions().get(13).pop());
+            gameBoard.getPositions().get(21).push(gameBoard.getPositions().get(13).pop());
+            gameBoard.getPositions().get(21).push(gameBoard.getPositions().get(13).pop());
+        }
+        return gameBoard;
+    }
+
+
     @Test
     void playMove() {
         GameBoard gameBoard = new GameBoard(new SimulationState(1));
@@ -27,21 +66,7 @@ class GameBoardTest {
         assertTrue(gameBoard.getPositions().get(21).peek().isColour());
 
         GameBoard gameBoard1 = new GameBoard(new SimulationState(1));
-        gameBoard1.getPositions().get(2).push(gameBoard1.getPositions().get(19).pop());
-        gameBoard1.getPositions().get(2).push(gameBoard1.getPositions().get(19).pop());
-        gameBoard1.getPositions().get(2).push(gameBoard1.getPositions().get(19).pop());
-        gameBoard1.getPositions().get(2).push(gameBoard1.getPositions().get(19).pop());
-        gameBoard1.getPositions().get(2).push(gameBoard1.getPositions().get(19).pop());
-
-        gameBoard1.getPositions().get(3).push(gameBoard1.getPositions().get(17).pop());
-        gameBoard1.getPositions().get(3).push(gameBoard1.getPositions().get(17).pop());
-        gameBoard1.getPositions().get(3).push(gameBoard1.getPositions().get(17).pop());
-
-        gameBoard1.getPositions().get(4).push(gameBoard1.getPositions().get(12).pop());
-        gameBoard1.getPositions().get(4).push(gameBoard1.getPositions().get(12).pop());
-        gameBoard1.getPositions().get(4).push(gameBoard1.getPositions().get(12).pop());
-        gameBoard1.getPositions().get(4).push(gameBoard1.getPositions().get(12).pop());
-        gameBoard1.getPositions().get(4).push(gameBoard1.getPositions().get(12).pop());
+        createEndgame(gameBoard.getWhite(), gameBoard1);
         gameBoard1.playMove(new Move(1, 0, false, true, true), gameBoard1.getWhite());
         assertTrue(gameBoard1.checkEndgame(gameBoard1.getWhite()));
         assertTrue(gameBoard1.getPositions().get(1).size() == 1);
@@ -77,19 +102,40 @@ class GameBoardTest {
 
     @Test
     void finishGame() {
-
+        GameBoard gameBoard = new GameBoard(new SimulationState(1));
+        gameBoard.finishGame(new Agent("Charlie", true, gameBoard), new Agent("David", true, gameBoard));
     }
 
     @Test
     void checkEndgame() {
+        GameBoard gameBoard = new GameBoard(new SimulationState(1));
+        Agent alice = new Agent("Alice", true, gameBoard);
+        Agent bob = new Agent("Bob", false, gameBoard);
+        assertFalse(gameBoard.checkEndgame(alice));
+        assertFalse(gameBoard.checkEndgame(bob));
+        gameBoard = createEndgame(alice, gameBoard);
+        assertTrue(gameBoard.checkEndgame(alice));
+        assertFalse(gameBoard.checkEndgame(bob));
+        gameBoard = new GameBoard(new SimulationState(1));
+        gameBoard = createEndgame(bob, gameBoard);
+        assertFalse(gameBoard.checkEndgame(alice));
+        assertTrue(gameBoard.checkEndgame(bob));
     }
 
     @Test
     void giveMoves() {
+        GameBoard gameBoard = new GameBoard(new SimulationState(1));
+        ArrayList<Move> moves = gameBoard.giveMoves(2, new Agent("Alice", true, gameBoard));
+        assertTrue(moves.size() == 3);
+        moves = gameBoard.giveMoves(2, new Agent("Bob", false, gameBoard));
+        assertTrue(moves.size() == 3);
+        moves = gameBoard.giveMoves(4, new Agent("Alice", true, gameBoard));
+        assertTrue(moves.size() == 1);
     }
 
     @Test
     void checkMove() {
+
     }
 
     @Test

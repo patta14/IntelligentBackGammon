@@ -59,11 +59,13 @@ public class GameBoard {
             int temp = !agent.isColour() ? 25 : 0;
             positions.get(temp).push(positions.get(move.getNewPosition()).pop());
         }
-        if(checkEndgame(agent) && move.isOut()){
+        if(checkEndgame(agent) && !positions.get(move.getPreviousPosition()).isEmpty() && move.isOut()){
             positions.get(move.getPreviousPosition()).pop();
             return positions;
         }
-        positions.get(move.getNewPosition()).push(positions.get(move.getPreviousPosition()).pop());
+        if(!positions.get(move.getPreviousPosition()).isEmpty()) {
+            positions.get(move.getNewPosition()).push(positions.get(move.getPreviousPosition()).pop());
+        }
         if(checkFinal(agent)){
             finishGame(agent, agent.isColour() ? black : white);
         }
@@ -123,7 +125,7 @@ public class GameBoard {
         ArrayList<Move> moves = new ArrayList<>();
         //muss das hier nicht <25?
         for(int i = 1; i<25; i++) {
-            if(positions.get(i).size() != 0 && checkMove(count, i, agent).isLegal()){
+            if(positions.get(i).size() != 0 && positions.get(i).peek().isColour() == agent.isColour() && checkMove(count, i, agent).isLegal()){
                 moves.add(checkMove(count, i, agent));
             }
         }
