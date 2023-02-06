@@ -135,11 +135,37 @@ class GameBoardTest {
 
     @Test
     void checkMove() {
+        GameBoard gameBoard = new GameBoard(new SimulationState(1));
+        Move testMove1 = gameBoard.checkMove(2, 19, gameBoard.getWhite());
+        assertTrue(testMove1.isLegal());
+        assertFalse(testMove1.isCanKick());
+        assertFalse(testMove1.isOut());
+        assertTrue(testMove1.getNewPosition() == 17 && testMove1.getPreviousPosition() == 19);
 
+        Move testMove2 = gameBoard.checkMove(4, 17, gameBoard.getWhite());
+        assertFalse(testMove2.isLegal());
+        assertFalse(testMove2.isCanKick());
+        assertFalse(testMove2.isOut());
+        assertTrue(testMove2.getNewPosition() == 13 && testMove2.getPreviousPosition() == 17);
+
+        Move testMove3 = gameBoard.checkMove(1, 19, gameBoard.getWhite());
+        assertTrue(testMove3.isLegal());
+        assertFalse(testMove3.isCanKick());
+        assertFalse(testMove3.isOut());
+        assertTrue(testMove3.getNewPosition() == 18 && testMove3.getPreviousPosition() == 19);
+
+        gameBoard.getPositions().get(8).pop();
+        gameBoard.getPositions().get(8).pop();
+        Move testMove4 = gameBoard.checkMove(4, 12, gameBoard.getWhite());
+        assertTrue(testMove4.isLegal());
+        assertTrue(testMove4.isCanKick());
+        assertFalse(testMove4.isOut());
+        assertTrue(testMove4.getNewPosition() == 8 && testMove4.getPreviousPosition() == 12);
     }
 
     @Test
     void exitJail() {
+
     }
 
     @Test
