@@ -46,15 +46,16 @@ public class Agent implements Steppable {
 			throw new RuntimeException(e);
 		}
 		*/
-		System.out.println(this.name + " beginnt einen Zug!");
+		System.out.println("Runde: " + gameBoard.ROUNDS + " " + this.name + " beginnt einen Zug!");
 		//SimulationState simulationState = (SimulationState) simState;
 		gameBoard.getDices().roll();
 		System.out.println(this.name + " hat eine " + gameBoard.getDices().getFace1() + " und eine " + gameBoard.getDices().getFace2()+ " gewürfelt.");
 		System.out.println();
 
 		agentPlay(gameBoard.getDices());
+		gameBoard.ROUNDS++;
 
-		//printInfo();
+		printInfo();
 
 		gameBoard.getDices().roll();
 	}
@@ -63,11 +64,11 @@ public class Agent implements Steppable {
 		//Dieser Teil bis Zeile 72 bildet einfach nur das Brett ab!
 		for(int i = 13; i< 25; i++){
 			if(gameBoard.getPositions().get(i).isEmpty() || gameBoard.getPositions().get(i).size() == 0){
-				System.out.print(" Frei ;");
+				System.out.print(" Frei |");
 			} else{
 				System.out.print(" "
-						+ (gameBoard.getPositions().get(i).peek().isColour() ? "weiß" : "schwarz")
-						+ " und " + gameBoard.getPositions().get(i).size() + " ;");
+						+ (gameBoard.getPositions().get(i).peek().isColour() ? "weiß " : "schwarz ")
+						+ gameBoard.getPositions().get(i).size() + " |");
 			}
 		}
 		System.out.println();
@@ -76,8 +77,8 @@ public class Agent implements Steppable {
 				System.out.print(" Frei ;");
 			} else{
 				System.out.print(" "
-						+ (gameBoard.getPositions().get(i).peek().isColour() ? "weiß" : "schwarz")
-						+ " und " + gameBoard.getPositions().get(i).size() + " ;");
+						+ (gameBoard.getPositions().get(i).peek().isColour() ? "weiß " : "schwarz ")
+						+  gameBoard.getPositions().get(i).size() + " |");
 			}
 		}
 		System.out.println();
@@ -124,7 +125,6 @@ public class Agent implements Steppable {
 				internalPlayMove(strategy.run(moves, gameBoard, dices, this));
 			}
 		}
-		GameBoard.ROUNDS++;
 		return 0;
 	}
 	public boolean internalPlayMove(Move move){

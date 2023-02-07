@@ -165,15 +165,55 @@ class GameBoardTest {
 
     @Test
     void exitJail() {
+        GameBoard gameBoard = new GameBoard(new SimulationState(1));
+        gameBoard.getPositions().get(25).push(gameBoard.getPositions().get(19).pop());
+        gameBoard.getDices().setFace1(1);
+        gameBoard.getDices().setFace2(3);
+        ArrayList<Move> moves = gameBoard.exitJail(gameBoard.getWhite(), gameBoard.getDices());
+        assertFalse(moves.get(0).isLegal());
+        assertTrue(moves.get(1).isLegal());
+        assertEquals(24, moves.get(0).getNewPosition());
+        assertEquals(22, moves.get(1).getNewPosition());
 
+        gameBoard.getPositions().get(0).push(gameBoard.getPositions().get(6).pop());
+        gameBoard.getDices().setFace1(1);
+        gameBoard.getDices().setFace2(3);
+        ArrayList<Move> moves1 = gameBoard.exitJail(gameBoard.getBlack(), gameBoard.getDices());
+        assertFalse(moves.get(0).isLegal());
+        assertTrue(moves.get(1).isLegal());
+        assertEquals(1, moves1.get(0).getNewPosition());
+        assertEquals(3, moves1.get(1).getNewPosition());
     }
 
     @Test
     void checkFinal() {
+        GameBoard gameBoard = new GameBoard(new SimulationState(1));
+        for (int i = 0; i < 26; i++) {
+            while (gameBoard.getPositions().get(i).size() > 0 && gameBoard.getPositions().get(i).peek().isColour()) {
+                    gameBoard.getPositions().get(i).pop();
+                }
+            }
+        assertTrue(gameBoard.checkFinal(gameBoard.getWhite()));
+        gameBoard = new GameBoard(new SimulationState(1));
+        for (int i = 0; i < 26; i++) {
+            while (gameBoard.getPositions().get(i).size() > 0 && !gameBoard.getPositions().get(i).peek().isColour()) {
+                gameBoard.getPositions().get(i).pop();
+            }
+        }
+        assertTrue(gameBoard.checkFinal(gameBoard.getBlack()));
     }
+
 
     @Test
     void giveFinalMoves() {
+        GameBoard gameBoard = new GameBoard(new SimulationState(1));
+        assertTrue(gameBoard.giveFinalMoves(gameBoard.getWhite(), gameBoard.getDices()).isEmpty());
+        assertTrue(gameBoard.giveFinalMoves(gameBoard.getBlack(), gameBoard.getDices()).isEmpty());
+
+        createEndgame(gameBoard.getWhite(), gameBoard);
+        gameBoard.getDices().setFace1(1);
+        gameBoard.getDices().setFace2(2);
+        ArrayList<Move> moves1 = gameBoard.giveFinalMoves(gameBoard.getWhite(), gameBoard.getDices());
     }
 
 

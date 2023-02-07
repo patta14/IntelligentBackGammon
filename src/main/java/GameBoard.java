@@ -61,6 +61,9 @@ public class GameBoard {
         }
         if(checkEndgame(agent) && !positions.get(move.getPreviousPosition()).isEmpty() && move.isOut()){
             positions.get(move.getPreviousPosition()).pop();
+            if(checkFinal(agent)){
+                finishGame(agent, agent.isColour() ? black : white);
+            }
             return positions;
         }
         if(!positions.get(move.getPreviousPosition()).isEmpty()) {
@@ -141,8 +144,6 @@ public class GameBoard {
             return new Move(position, newPosition, false, true);
         } else if (inRange && positions.get(newPosition).size() == 1 && positions.get(newPosition).peek().isColour() != agent.isColour()) {
             return new Move(position, newPosition, true, true);
-        } else if (inRange && positions.get(newPosition).peek().isColour() == agent.isColour()){
-            return new Move(position, newPosition, false, true);
         }
         return new Move(position, newPosition, false, false);
     }
@@ -198,17 +199,17 @@ public class GameBoard {
         }
 
         if(moves.isEmpty()){
-            for(int i = !agent.isColour() ? 6 : 19; !agent.isColour() ? i > 0 : i < 25; i = !agent.isColour() ? i - 1 : i + 1){
+            for(int i = agent.isColour() ? 6 : 19; agent.isColour() ? i > 0 : i < 25; i = agent.isColour() ? i - 1 : i + 1){
                 if(!positions.get(i).isEmpty() && positions.get(i).peek().isColour() == agent.isColour()){
-                    if(!agent.isColour() ? i - dices.getFace1() <= 0 : i + dices.getFace1() >= 25){
+                    if(agent.isColour() ? i - dices.getFace1() <= 0 : i + dices.getFace1() >= 25){
                         moves.add(new Move(i, i, false, true, true ));
                         break;
                     }
                 }
             }
-            for(int i = !agent.isColour() ? 6 : 19; !agent.isColour() ? i > 0 : i < 25; i = !agent.isColour() ? i - 1 : i + 1){
-                if(!positions.get(i).isEmpty() && positions.get(i).peek().isColour() == !agent.isColour()){
-                    if(!agent.isColour() ? i - dices.getFace2() <= 0 : i + dices.getFace2() >= 25){
+            for(int i = agent.isColour() ? 6 : 19; agent.isColour() ? i > 0 : i < 25; i = agent.isColour() ? i - 1 : i + 1){
+                if(!positions.get(i).isEmpty() && positions.get(i).peek().isColour() == agent.isColour()){
+                    if(agent.isColour() ? i - dices.getFace2() <= 0 : i + dices.getFace2() >= 25){
                         moves.add(new Move(i, i, false, true, true ));
                         break;
                     }
