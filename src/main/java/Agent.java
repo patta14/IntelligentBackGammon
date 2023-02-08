@@ -19,7 +19,7 @@ public class Agent implements Steppable {
 		this.colour = colour;
 		this.gameBoard = gameBoard;
 
-		int i = 1;// rng.nextInt(4) + 1;
+		int i = 3; //rng.nextInt(4) + 1;
 		switch (i){
 			case 1:
 				strategy = new RandomMovesStrategy();

@@ -11,27 +11,35 @@ public class BlockageStrategy implements Strategy{
     }
 
     public Move run(ArrayList<Move> moves, GameBoard gameBoard, Dices dices, Agent agent) {
+        System.out.println("BALLS");
         if(moves.isEmpty()){
             return(new Move(0, 0, false, false, false));
         }
-        HashMap<Move, Integer> movePriorities = new HashMap<>();
-        for (Move move : moves) {
-            if(move.isCanKick()){
+        ArrayList<Integer> priorities = new ArrayList<>();
+        for (Move move: moves) {
+            if((agent.isColour() ? move.getPreviousPosition() == 25 : move.getPreviousPosition() == 0) && move.isLegal()) {
                 return move;
+            } else if ((agent.isColour() ? move.getPreviousPosition() == 25 : move.getPreviousPosition() == 0)) {
+                return move;
+        } else if (move.isCanKick()) {
+                return move;
+            } else {
+                priorities.add(moves.indexOf(move), checkSurrounding(move, gameBoard));
             }
-            movePriorities.put(move, checkSurrounding(move, gameBoard));
         }
-        AtomicReference<Move> bestMove = new AtomicReference<>(moves.get(0));
-        int max = Collections.max(movePriorities.values());
-        movePriorities.forEach((key, value) -> {
-            if(value == max){
-                bestMove.set(key);
+        int maxPriority = 0;
+        Move maxMove = moves.get(0);
+        for(int i = 0; i < priorities.size(); i++){
+            if(priorities.get(i) > maxPriority){
+                maxPriority = priorities.get(i);
+                maxMove = moves.get(i);
             }
-        });
-        return bestMove.get();
+        }
+        return maxMove;
     }
 
     public int checkSurrounding(Move move, GameBoard gameBoard){
+        System.out.println("COCK");
         int blockageSize = 0;
         boolean blocked1 = true;
         boolean blocked2 = true;

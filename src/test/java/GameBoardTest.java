@@ -214,6 +214,7 @@ class GameBoardTest {
         gameBoard.getDices().setFace1(1);
         gameBoard.getDices().setFace2(2);
         ArrayList<Move> moves1 = gameBoard.giveFinalMoves(gameBoard.getWhite(), gameBoard.getDices());
+
     }
 
 
