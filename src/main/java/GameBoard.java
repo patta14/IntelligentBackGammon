@@ -8,6 +8,7 @@ import java.util.Stack;
 public class GameBoard {
 
     public static int ROUNDS = 0;
+    public static boolean FINISHED = false;
     private Dices dices = new Dices();
 
     public Dices getDices() {
@@ -54,6 +55,9 @@ public class GameBoard {
     }
 
     public ArrayList<Stack<Piece>> playMove(Move move, Agent agent){
+        if(!move.isLegal()){
+            return positions;
+        }
         if(move.isCanKick()
                 && (positions.get(move.getNewPosition()).size() == 1 && positions.get(move.getNewPosition()).peek().isColour() != agent.isColour())){
             int temp = !agent.isColour() ? 25 : 0;
@@ -76,27 +80,30 @@ public class GameBoard {
     }
 
     public void finishGame(Agent winner, Agent loser){
-        System.out.println(winner.getName() + " hat gewonnen!");
-        try {
-            File myObj = new File("result.txt");
-            if (myObj.createNewFile()) {
-                System.out.println("File created: " + myObj.getName());
-            } else {
-                System.out.println("File already exists.");
+        if(!FINISHED) {
+            System.out.println(winner.getName() + " hat gewonnen!");
+            try {
+                File myObj = new File("result.txt");
+                if (myObj.createNewFile()) {
+                    System.out.println("File created: " + myObj.getName());
+                } else {
+                    System.out.println("File already exists.");
+                }
+            } catch (IOException e) {
+                System.out.println("An error occurred.");
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
+            try {
+                FileWriter myWriter = new FileWriter("result.txt");
+                myWriter.append(winner.getName() + " " + winner.getStrategy().getName() + " " + loser.getName() + " " + loser.getStrategy().getName() + " " + ROUNDS);
+                myWriter.close();
+                System.out.println("Successfully wrote to the file.");
+            } catch (IOException e) {
+                System.out.println("An error occurred.");
+                e.printStackTrace();
+            }
         }
-        try {
-            FileWriter myWriter = new FileWriter("result.txt");
-            myWriter.append(winner.getName() + " " + winner.getStrategy().getName() + " " + loser.getName() + " " + loser.getStrategy().getName() + " " + ROUNDS);
-            myWriter.close();
-            System.out.println("Successfully wrote to the file.");
-        } catch (IOException e) {
-            System.out.println("An error occurred.");
-            e.printStackTrace();
-        }
+        FINISHED = true;
         simulationState.finish();
     }
 
@@ -118,6 +125,7 @@ public class GameBoard {
         }
 
         if((agent.isColour() && stoneCount == this.getWhitePiecesInGame()) || (!agent.isColour() && stoneCount == this.getBlackPiecesInGame())) {
+            System.out.println("ENDGAME STARTET FÜR " + agent.getName());
             return true;
         } else {
             return false;
@@ -166,57 +174,50 @@ public class GameBoard {
         return won;
     }
 
-    public ArrayList<Move> giveFinalMoves(Agent agent, Dices dices){
-        ArrayList<Move> moves = new ArrayList<>();
+    public Move giveFinalMoves(Agent agent, int count){
         if(!checkEndgame(agent)){
-            return moves;
+            return new Move(0 , 0 , false, false);
         }
-
-        if(!agent.isColour()){
-            if(!positions.get(dices.getFace1()).isEmpty() && positions.get(dices.getFace1()).peek().isColour()){
-                moves.add(new Move(dices.getFace1(), 0, false, true, true));
-            }
-            if(!positions.get(dices.getFace2()).isEmpty() && positions.get(dices.getFace2()).peek().isColour()) {
-                moves.add(new Move(dices.getFace1(), 0, false, true, true));
+        if(!positions.get(agent.isColour() ? count : 25-count).isEmpty() && (agent.isColour() ? positions.get(count).peek().isColour() : !positions.get(25-count).peek().isColour())){
+            return new Move(agent.isColour() ? count : 25-count, 0, false, true, true);
+        }
+        Move move = giveFinalMovesHelper(agent, count);
+        if(move.isLegal()){
+            return move;
+        }
+        if(agent.isColour()){
+            for(int i = 6; i > 0; i--){
+                if(!positions.get(i).isEmpty() && positions.get(i).peek().isColour() && i-count <= 0){
+                    return new Move(i, 0, false, true, true);
+                }
             }
         } else {
-            if(!positions.get(25 - dices.getFace1()).isEmpty() && positions.get(25 - dices.getFace1()).peek().isColour()){
-                moves.add(new Move(dices.getFace1(), 0, false, true, true));
-            }
-            if(!positions.get(25 - dices.getFace2()).isEmpty() && positions.get(25 - dices.getFace2()).peek().isColour()) {
-                moves.add(new Move(dices.getFace1(), 0, false, true, true));
-            }
-        }
-        if(moves.isEmpty()){
-            for(Move move : giveMoves(dices.getFace1(), agent)){
-                if(move.isLegal())
-                    moves.add(move);
-            }
-            for(Move move : giveMoves(dices.getFace2(), agent)){
-                if(move.isLegal())
-                    moves.add(move);
+            for(int i = 19; i < 25; i++){
+                if(!positions.get(i).isEmpty() && !positions.get(i).peek().isColour() && i+count >= 25){
+                    return new Move(i, 0, false, true, true);
+                }
             }
         }
+        return new Move(0, 0, false, false);
+    }
 
-        if(moves.isEmpty()){
-            for(int i = agent.isColour() ? 6 : 19; agent.isColour() ? i > 0 : i < 25; i = agent.isColour() ? i - 1 : i + 1){
-                if(!positions.get(i).isEmpty() && positions.get(i).peek().isColour() == agent.isColour()){
-                    if(agent.isColour() ? i - dices.getFace1() <= 0 : i + dices.getFace1() >= 25){
-                        moves.add(new Move(i, i, false, true, true ));
-                        break;
-                    }
+    public Move giveFinalMovesHelper(Agent agent, int count){
+        if(agent.isColour()){
+            for(int i = 6; i > 0; i--){
+                Move move = checkMove(count, i, agent);
+                if(move.isLegal()){
+                    return move;
                 }
             }
-            for(int i = agent.isColour() ? 6 : 19; agent.isColour() ? i > 0 : i < 25; i = agent.isColour() ? i - 1 : i + 1){
-                if(!positions.get(i).isEmpty() && positions.get(i).peek().isColour() == agent.isColour()){
-                    if(agent.isColour() ? i - dices.getFace2() <= 0 : i + dices.getFace2() >= 25){
-                        moves.add(new Move(i, i, false, true, true ));
-                        break;
-                    }
+        } else {
+            for(int i = 19; i < 25; i++){
+                Move move = checkMove(count, i, agent);
+                if(move.isLegal()){
+                    return move;
                 }
             }
         }
-        return moves;
+        return new Move(0, 0, false, false);
     }
 
 

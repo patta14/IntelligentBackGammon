@@ -19,7 +19,7 @@ public class Agent implements Steppable {
 		this.colour = colour;
 		this.gameBoard = gameBoard;
 
-		int i = 3; //rng.nextInt(4) + 1;
+		int i = rng.nextInt(4) + 1;
 		switch (i){
 			case 1:
 				strategy = new RandomMovesStrategy();
@@ -82,19 +82,14 @@ public class Agent implements Steppable {
 			}
 		}
 		System.out.println();
-		System.out.println("Aktuell im im Gefängnis: " + (this.isColour() ? gameBoard.getPositions().get(25).size() : gameBoard.getPositions().get(0).size()));
+		System.out.println("Aktuell im im Gefängnis: " + gameBoard.getPositions().get(25).size() + " und " +  gameBoard.getPositions().get(0).size());
 		System.out.println();
 		System.out.println(this.name + " beendet seinen Zug!");
 	}
 
 	public int agentPlay(Dices dices){
 		if(gameBoard.checkEndgame(this)){
-			if(!gameBoard.giveFinalMoves(this, dices).isEmpty()) {
-				internalPlayMove(gameBoard.giveFinalMoves(this, dices).remove(0));
-			}
-			if(!gameBoard.giveFinalMoves(this, dices).isEmpty()) {
-				internalPlayMove(gameBoard.giveFinalMoves(this, dices).remove(0));
-			}
+			finalPlay(dices);
 		 	return 1;
 		}
 		ArrayList<Integer> remainingDices = new ArrayList<>();
@@ -109,6 +104,9 @@ public class Agent implements Steppable {
 
 		while(!remainingDices.isEmpty() && (this.isColour() ? gameBoard.getPositions().get(25).size() >= 1 : gameBoard.getPositions().get(0).size() >= 1)){
 			Move move1 = strategy.run(gameBoard.exitJail(this, dices), gameBoard, dices, this);
+			if(!move1.isLegal()){
+				return 1;
+			}
 			for (Integer i: remainingDices) {
 				if(i == Math.abs(move1.getPreviousPosition() - move1.getNewPosition())){
 					remainingDices.remove(i);
@@ -126,6 +124,29 @@ public class Agent implements Steppable {
 			}
 		}
 		return 0;
+	}
+	public void finalPlay(Dices dices){
+		ArrayList<Integer> diceFaces = new ArrayList<>();
+		if(dices.getFace1() == dices.getFace2()){
+			for(int i = 0; i < 4; i++){
+				diceFaces.add(dices.getFace1());
+			}
+		} else {
+			diceFaces.add(dices.getFace1());
+			diceFaces.add(dices.getFace2());
+		}
+		for (int count: diceFaces) {
+			internalPlayMove(gameBoard.giveFinalMoves(this, count));
+		}
+		/*
+		if(!gameBoard.giveFinalMoves(this, dices).isEmpty()) {
+			internalPlayMove(gameBoard.giveFinalMoves(this, dices).remove(0));
+		}
+		if(!gameBoard.giveFinalMoves(this, dices).isEmpty()) {
+			internalPlayMove(gameBoard.giveFinalMoves(this, dices).remove(0));
+		}
+		*/
+
 	}
 	public boolean internalPlayMove(Move move){
 		if(move.isLegal()){
