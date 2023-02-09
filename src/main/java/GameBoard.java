@@ -81,7 +81,7 @@ public class GameBoard {
 
     public void finishGame(Agent winner, Agent loser){
         if(!FINISHED) {
-            System.out.println(winner.getName() + " hat gewonnen!");
+            System.out.println(winner.getName() + " hat gewonnen!" + " " + ROUNDS);
             try {
                 File myObj = new File("result.txt");
                 if (myObj.createNewFile()) {
@@ -94,8 +94,8 @@ public class GameBoard {
                 e.printStackTrace();
             }
             try {
-                FileWriter myWriter = new FileWriter("result.txt");
-                myWriter.append(winner.getName() + " " + winner.getStrategy().getName() + " " + loser.getName() + " " + loser.getStrategy().getName() + " " + ROUNDS);
+                FileWriter myWriter = new FileWriter("result.txt", true);
+                myWriter.append(winner.getName() + " " + winner.getStrategy().getName() + " " + loser.getName() + " " + loser.getStrategy().getName() + " " + ROUNDS + "\n");
                 myWriter.close();
                 System.out.println("Successfully wrote to the file.");
             } catch (IOException e) {
@@ -125,7 +125,6 @@ public class GameBoard {
         }
 
         if((agent.isColour() && stoneCount == this.getWhitePiecesInGame()) || (!agent.isColour() && stoneCount == this.getBlackPiecesInGame())) {
-            System.out.println("ENDGAME STARTET FÜR " + agent.getName());
             return true;
         } else {
             return false;

@@ -11,7 +11,6 @@ public class BlockageStrategy implements Strategy{
     }
 
     public Move run(ArrayList<Move> moves, GameBoard gameBoard, Dices dices, Agent agent) {
-        System.out.println("BALLS");
         if(moves.isEmpty()){
             return(new Move(0, 0, false, false, false));
         }
@@ -39,7 +38,6 @@ public class BlockageStrategy implements Strategy{
     }
 
     public int checkSurrounding(Move move, GameBoard gameBoard){
-        System.out.println("COCK");
         int blockageSize = 0;
         boolean blocked1 = true;
         boolean blocked2 = true;

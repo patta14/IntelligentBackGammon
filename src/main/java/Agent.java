@@ -46,16 +46,16 @@ public class Agent implements Steppable {
 			throw new RuntimeException(e);
 		}
 		*/
-		System.out.println("Runde: " + gameBoard.ROUNDS + " " + this.name + " beginnt einen Zug!");
+		//System.out.println("Runde: " + gameBoard.ROUNDS + " " + this.name + " beginnt einen Zug!");
 		//SimulationState simulationState = (SimulationState) simState;
 		gameBoard.getDices().roll();
-		System.out.println(this.name + " hat eine " + gameBoard.getDices().getFace1() + " und eine " + gameBoard.getDices().getFace2()+ " gewürfelt.");
-		System.out.println();
+		//System.out.println(this.name + " hat eine " + gameBoard.getDices().getFace1() + " und eine " + gameBoard.getDices().getFace2()+ " gewürfelt.");
+		//System.out.println();
 
 		agentPlay(gameBoard.getDices());
 		gameBoard.ROUNDS++;
 
-		printInfo();
+		//printInfo();
 
 		gameBoard.getDices().roll();
 	}
