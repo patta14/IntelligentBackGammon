@@ -45,7 +45,7 @@ public class GameBoard {
         positions.add(19,setup(5, true));
         positions.add(24,setup(2, false));
         }
-
+    //Hilfsmethode um die Startpositionen herzustellen
     public Stack<Piece> setup(int count, boolean colour){
         Stack<Piece> stack = new Stack<>();
         for (int i = 0; i < count; i++) {
@@ -53,7 +53,7 @@ public class GameBoard {
         }
         return stack;
     }
-
+    //Spielt einen Spielzug aus
     public ArrayList<Stack<Piece>> playMove(Move move, Agent agent){
         if(!move.isLegal()){
             return positions;
@@ -78,7 +78,7 @@ public class GameBoard {
         }
         return positions;
     }
-
+    //Beendet das Spiel
     public void finishGame(Agent winner, Agent loser){
         if(!FINISHED) {
             System.out.println(winner.getName() + " hat gewonnen!" + " " + ROUNDS);
@@ -141,6 +141,7 @@ public class GameBoard {
         }
         return moves;
     }
+    //Überprüft die Legalität und Eigenschaften eines Zugs
     public Move checkMove(int count, int position, Agent agent){
         int newPosition = agent.isColour() ? position-count : position+count;
         boolean inRange = (newPosition > 0 && newPosition < 25) ? true : false;
@@ -154,7 +155,7 @@ public class GameBoard {
         }
         return new Move(position, newPosition, false, false);
     }
-
+    //Hilft beim Verlassen des Gefängnis
     public ArrayList<Move> exitJail(Agent agent, Dices dices){
         ArrayList<Move> moves = new ArrayList<>();
         moves.add(checkMove(dices.getFace1(), agent.isColour() ? 25 : 0, agent));
@@ -162,7 +163,7 @@ public class GameBoard {
         return moves;
     }
 
-
+    //Überprüft ob das Spiel in der Endphase ist und ob Steine rausgewürfelt werden können
     public boolean checkFinal(Agent agent){
         boolean won = true;
         for(Stack<Piece> stack: positions){
@@ -172,7 +173,7 @@ public class GameBoard {
         }
         return won;
     }
-
+    //Ist für die Züge in der Endphase des Spiels verantwortlich und gibt diese zurück
     public Move giveFinalMoves(Agent agent, int count){
         if(!checkEndgame(agent)){
             return new Move(0 , 0 , false, false);
@@ -199,7 +200,7 @@ public class GameBoard {
         }
         return new Move(0, 0, false, false);
     }
-
+    //Hilfsmethode für die vorherige Methode
     public Move giveFinalMovesHelper(Agent agent, int count){
         if(agent.isColour()){
             for(int i = 6; i > 0; i--){

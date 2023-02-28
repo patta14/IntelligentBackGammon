@@ -89,7 +89,7 @@ public class Agent implements Steppable {
 		System.out.println();
 		System.out.println(this.name + " beendet seinen Zug!");
 	}
-
+	//Hauptmethode für den Zug des Agenten
 	public int agentPlay(Dices dices){
 		if(gameBoard.checkEndgame(this)){
 			finalPlay(dices);
@@ -128,6 +128,8 @@ public class Agent implements Steppable {
 		}
 		return 0;
 	}
+
+	//Verantwortlich dafür, dass in der Endphase die Steine rausgespielt werden
 	public void finalPlay(Dices dices){
 		ArrayList<Integer> diceFaces = new ArrayList<>();
 		if(dices.getFace1() == dices.getFace2()){
@@ -141,16 +143,9 @@ public class Agent implements Steppable {
 		for (int count: diceFaces) {
 			internalPlayMove(gameBoard.giveFinalMoves(this, count));
 		}
-		/*
-		if(!gameBoard.giveFinalMoves(this, dices).isEmpty()) {
-			internalPlayMove(gameBoard.giveFinalMoves(this, dices).remove(0));
-		}
-		if(!gameBoard.giveFinalMoves(this, dices).isEmpty()) {
-			internalPlayMove(gameBoard.giveFinalMoves(this, dices).remove(0));
-		}
-		*/
-
 	}
+
+	//Hilfsmethode in der der Zug ausgeführt wird; wichtig für Tests
 	public boolean internalPlayMove(Move move){
 		if(move.isLegal()){
 			gameBoard.playMove(move, this);
